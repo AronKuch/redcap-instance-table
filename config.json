@@ -28,6 +28,10 @@
             "description": "Suppress the \"+ Add New\" button on data entry forms."
         },
         {
+            "tag": "@INSTANCETABLE_SHOWSURVEYADD",
+            "description": "Addes the \"+ Add New\" button on surveys. Caution: may allow user intentional or accidental misuse, such as adding infinite instances."
+        },
+        {
             "tag": "@INSTANCETABLE_HIDEINSTANCECOL",
             "description": "Hide the '#' column containing instance numbers."
         },

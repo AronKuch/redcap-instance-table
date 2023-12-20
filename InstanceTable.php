@@ -34,6 +34,7 @@ class InstanceTable extends AbstractExternalModule
         const ACTION_TAG_LABEL = '@INSTANCETABLE_LABEL';
         const ACTION_TAG_SCROLLX = '@INSTANCETABLE_SCROLLX';
         const ACTION_TAG_HIDEADDBTN = '@INSTANCETABLE_HIDEADD'; // i.e. hide "Add" button even if user has edit access to form
+        const ACTION_TAG_SHOWSURVEYADD = '@INSTANCETABLE_SHOWSURVEYADD'; // i.e. Show the "Add" button on survey view
         const ACTION_TAG_HIDEINSTANCECOL = '@INSTANCETABLE_HIDEINSTANCECOL'; // i.e. hide the "#" column containing instance numbers
         const ACTION_TAG_VARLIST = '@INSTANCETABLE_VARLIST'; // provide a comma-separated list of variables to include (not including any tagged HIDE)
         const ACTION_TAG_PAGESIZE = '@INSTANCETABLE_PAGESIZE'; // Override default choices for page sizing: specify integer default page size, use -1 for All
@@ -260,7 +261,12 @@ class InstanceTable extends AbstractExternalModule
                                 } else {
                                         $repeatingFormDetails['hide_add_btn'] = false;
                                 }
-                                
+                                if (preg_match("/".self::ACTION_TAG_SHOWSURVEYADD."/", $fieldDetails['field_annotation'], $matches)) {
+                                        $repeatingFormDetails['show_survey_add'] = true;
+                                } else {
+                                        $repeatingFormDetails['show_survey_add'] = false;
+                                }
+
                                 $this->taggedFields[] = $repeatingFormDetails;
                         }
                 }
@@ -282,8 +288,11 @@ class InstanceTable extends AbstractExternalModule
         protected function checkUserPermissions() {
                 foreach ($this->taggedFields as $key => $repeatingFormDetails) {
                         if ($this->isSurvey) {
-                                $repeatingFormDetails['permission_level'] = 2; // always read only in survey view
-                        } else if ($repeatingFormDetails['hide_add_btn']) {
+                                if ($repeatingFormDetails['show_survey_add']) {
+                                        $repeatingFormDetails['permission_level'] = 1; // allow the survey in view/edit
+                                } else {
+	                                $repeatingFormDetails['permission_level'] = 2; // read only in survey view
+                                }                        } else if ($repeatingFormDetails['hide_add_btn']) {
                                 $repeatingFormDetails['permission_level'] = 2; // Hide "Add" button = "read only" (effectively!)
                         } else if ($repeatingFormDetails['permission_level'] > -1) {
                                 switch ($this->user_rights['forms'][$repeatingFormDetails['form_name']]) {
